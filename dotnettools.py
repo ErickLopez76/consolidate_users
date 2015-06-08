@@ -95,12 +95,13 @@ class dotnetServer:
         pass
 
     def getMaxId(self):
-        returndata = 0
+        #returndata = 0
         cnn = pymssql.connect(self._host, self._dbuser, self._dbpassword, self._dbname)
         cursor = cnn.cursor()
         cursor.execute('select max(idperson) from persona')
         row = cursor.fetchone()
         returndata = row[0]
+        cnn.close()
         return returndata
 
     def getNewUsers(self):
@@ -177,6 +178,7 @@ class dotnetServer:
         print(row[25])
         print(row[26])
         print("Fin de impresion de row")
+        cnn.close()
         return rows
 
 class dotnetUsuaria:

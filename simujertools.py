@@ -1,6 +1,7 @@
 __author__ = 'erick_sis'
 import mysql
 import mysql.connector
+from contextlib import closing
 
 class simujerServer:
     def __init__(self):
@@ -95,15 +96,18 @@ class simujerServer:
         pass
 
     def getMaxId(self):
+        print("start getMaxId")
         returndata = 0
         cnn = mysql.connector.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname)
         cursor = cnn.cursor()
         cursor.execute('select max(id_usuaria) from cm_usuaria')
         row = cursor.fetchone()
         returndata = row[0]
+        print("end getMaxId")
         return returndata
 
     def delete_temp_table(self):
+        print("start delete_temp_table")
         cnn = mysql.connector.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname)
         cursor = cnn.cursor()
         try:
@@ -113,16 +117,23 @@ class simujerServer:
         except:
             cnn.close()
             pass
+        print("end delete_temp_table")
         return None
 
     def recreate_temp_table(self):
-        cnn = mysql.connector.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname)
+        print("start recreate_temp_table")
+        cnn = mysql.connector.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname )
         cursor = cnn.cursor()
+
         cursor.execute("call crea_temp_stat_usuaria(" + str(self._lastid) + ")")
         cnn.commit()
+        cnn.close()
+        print("end recreate_temp_table")
+        return None
 
 
     def getNewUsers(self):
+        print("start getNewUsers")
         shortCede = self._sede[2:]
         strDate = str(self._year_filter) + '-' + str(self._month_filter) + '-' + str(self._dayfilter)
 
@@ -131,9 +142,13 @@ class simujerServer:
         #Ejecutar procedimiento para re-crear tabla
         self.recreate_temp_table()
         #Consultar resultado
-        cnn = mysql.connector.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname)
-        cursor = cnn.cursor()
-        cursor.execute("select * from v_stat_usuaria2 order by id_usuaria limit 100")
-        rows = cursor.fetchall()
+
+        cnn = mysql.connector.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname, connect_timeout=30000)
+        with closing( cnn.cursor() ) as cur:
+            #cursor = cnn.cursor()
+            cur.execute("select * from v_stat_usuaria2 order by id_usuaria limit 100")
+            rows = cur.fetchall()
+        cnn.close()
+        print("end getNewUsers")
         return rows
 
