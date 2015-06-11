@@ -25,7 +25,7 @@ class Consolidate:
         cnn = psycopg2.connect("dbname=" + ldb + " host=" + lhost + " user=" + luser + " password=" + lpassword)
         cur = cnn.cursor()
 
-        cur.execute("select * from cnn_servers where active = true")
+        cur.execute("select * from cnn_servers where active = true order by last_update")
         rows = cur.fetchall()
         #print(cur.rowcount)
         row = cur.fetchone()

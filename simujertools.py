@@ -1,7 +1,9 @@
 __author__ = 'erick_sis'
-import mysql
-import mysql.connector
+#import mysql
+#import mysql.connector
+import pymysql
 from contextlib import closing
+
 
 class simujerServer:
     def __init__(self):
@@ -91,14 +93,14 @@ class simujerServer:
         pass
 
     def process_users(self):
-        cnn = mysql.connector.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname)
+        cnn = pymysql.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname)
 
         pass
 
     def getMaxId(self):
         print("start getMaxId")
         returndata = 0
-        cnn = mysql.connector.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname)
+        cnn = pymysql.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname)
         cursor = cnn.cursor()
         cursor.execute('select max(id_usuaria) from cm_usuaria')
         row = cursor.fetchone()
@@ -108,7 +110,7 @@ class simujerServer:
 
     def delete_temp_table(self):
         print("start delete_temp_table")
-        cnn = mysql.connector.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname)
+        cnn = pymysql.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname)
         cursor = cnn.cursor()
         try:
             cursor.execute('drop table stat_cm_usuaria')
@@ -122,7 +124,7 @@ class simujerServer:
 
     def recreate_temp_table(self):
         print("start recreate_temp_table")
-        cnn = mysql.connector.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname )
+        cnn = pymysql.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname )
         cursor = cnn.cursor()
 
         cursor.execute("call crea_temp_stat_usuaria(" + str(self._lastid) + ")")
@@ -143,7 +145,7 @@ class simujerServer:
         self.recreate_temp_table()
         #Consultar resultado
 
-        cnn = mysql.connector.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname, connect_timeout=30000)
+        cnn = pymysql.connect (host=self._host, user=self._dbuser, password=self._dbpassword,database=self._dbname, connect_timeout=30000)
         with closing( cnn.cursor() ) as cur:
             #cursor = cnn.cursor()
             cur.execute("select * from v_stat_usuaria2 order by id_usuaria limit 100")
