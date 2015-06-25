@@ -19,6 +19,17 @@ class Consolidate:
         Password = cnf.get('PostgresServers','dbspassword')
         DbName = cnf.get('PostgresServers', 'dbname')
         return Host, User,Password, DbName
+
+    def updateReports(self):
+        lhost, luser, lpassword, ldb = self.getcnnparam()
+        cnn = psycopg2.connect("dbname=" + ldb + " host=" + lhost + " user=" + luser + " password=" + lpassword)
+        cur = cnn.cursor()
+
+        cur.execute("select prepare30()")
+        cnn.commit()
+        cnn.close()
+        return None
+
         
     def getrowAllServers(self):
         lhost, luser, lpassword, ldb = self.getcnnparam()

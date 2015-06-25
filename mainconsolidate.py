@@ -18,7 +18,7 @@ for server in servers:
     consolidate.processUsers(server[0], server[1], server[2], server[3], server[6], server[5],server[7],server[8],server[9],server[10])
     print("Sede finalizada")
     print(time.ctime())
-
+consolidate.updateReports()
 print("Fin de todos los procesos")
 print(time.ctime())
     #process every line the next desiction is in tools
